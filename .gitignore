@@ -1,0 +1,20 @@
+# 執行期資料庫（每次啟動會由 db.js 依 PDF 初始值自動建立，不納入版控）
+data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Node
+node_modules/
+npm-debug.log*
+
+# 環境變數與密鑰
+.env
+.env.*
+
+# 編輯器 / 系統
+.vscode/
+.DS_Store
+Thumbs.db
+*.log

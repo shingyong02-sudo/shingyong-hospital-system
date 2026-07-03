@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>後台 — 病床資料更新｜杏永醫院</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="admin-wrap">
+    <h1>杏永醫院 — 住院動態後台</h1>
+    <p class="sub">在此更新各病房的病床數與佔床數，空床數、佔床率、總計會自動計算。儲存後前台立即更新。</p>
+
+    <div class="topbar">
+      <button class="btn btn-primary" id="saveBtn">💾 儲存並更新前台</button>
+      <button class="btn btn-ghost btn-sm" id="addBtn">＋ 新增病房類別</button>
+      <button class="btn btn-ghost btn-sm" id="reloadBtn">↺ 重新載入</button>
+      <a class="link" href="/" target="_blank">🔗 開啟前台顯示 ↗</a>
+    </div>
+
+    <table class="admin">
+      <thead>
+        <tr>
+          <th style="min-width:180px;">病房類別</th>
+          <th>病床數</th>
+          <th>佔床數</th>
+          <th>空床數<br /><small>(自動)</small></th>
+          <th>佔床率<br /><small>(自動)</small></th>
+          <th>計入<br />保險病床</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+
+    <div class="notes-editor">
+      <h2>備註（前台「註：」欄）</h2>
+      <div id="notes"></div>
+      <button class="btn btn-ghost btn-sm" id="addNoteBtn">＋ 新增備註</button>
+    </div>
+
+    <div class="summary-box" id="summary"></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { fmtPct } from './common.js';
+
+    const rowsEl = document.getElementById('rows');
+    const notesEl = document.getElementById('notes');
+    const summaryEl = document.getElementById('summary');
+    const toastEl = document.getElementById('toast');
+
+    function toast(msg, isErr = false) {
+      toastEl.textContent = msg;
+      toastEl.className = 'toast show' + (isErr ? ' err' : '');
+      setTimeout(() => (toastEl.className = 'toast'), 2200);
+    }
+
+    function catRow(c = { name: '', total: 0, occupied: 0, is_insurance: true }) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text" class="f-name" value="${(c.name || '').replace(/"/g, '&quot;')}" placeholder="病房名稱" /></td>
+        <td><input type="number" min="0" class="f-total" value="${c.total ?? 0}" /></td>
+        <td><input type="number" min="0" class="f-occ" value="${c.occupied ?? 0}" /></td>
+        <td class="calc f-empty">0</td>
+        <td class="calc f-rate">0.0%</td>
+        <td><input type="checkbox" class="f-ins" ${c.is_insurance ? 'checked' : ''} /></td>
+        <td><button class="btn btn-danger btn-sm f-del" title="刪除此列">刪除</button></td>`;
+      tr.querySelectorAll('input').forEach((i) => i.addEventListener('input', recalc));
+      tr.querySelector('.f-del').addEventListener('click', () => { tr.remove(); recalc(); });
+      return tr;
+    }
+
+    function noteRow(text = '') {
+      const div = document.createElement('div');
+      div.className = 'note-row';
+      div.innerHTML = `<textarea rows="1">${text.replace(/</g, '&lt;')}</textarea>
+        <button class="btn btn-danger btn-sm">刪除</button>`;
+      div.querySelector('button').addEventListener('click', () => div.remove());
+      return div;
+    }
+
+    function collect() {
+      const categories = [...rowsEl.querySelectorAll('tr')].map((tr) => ({
+        name: tr.querySelector('.f-name').value,
+        total: +tr.querySelector('.f-total').value || 0,
+        occupied: +tr.querySelector('.f-occ').value || 0,
+        is_insurance: tr.querySelector('.f-ins').checked,
+      }));
+      const notes = [...notesEl.querySelectorAll('textarea')]
+        .map((t) => t.value.trim())
+        .filter(Boolean);
+      return { categories, notes };
+    }
+
+    function recalc() {
+      const { categories } = collect();
+      let tTotal = 0, tOcc = 0, iTotal = 0, iOcc = 0;
+      [...rowsEl.querySelectorAll('tr')].forEach((tr, idx) => {
+        const c = categories[idx];
+        let total = c.total, occ = c.occupied;
+        if (occ > total) { occ = total; tr.querySelector('.f-occ').value = total; }
+        const empty = total - occ;
+        const rate = total > 0 ? (occ / total) * 100 : 0;
+        const emptyEl = tr.querySelector('.f-empty');
+        const rateEl = tr.querySelector('.f-rate');
+        emptyEl.textContent = empty;
+        rateEl.textContent = fmtPct(rate);
+        rateEl.classList.toggle('hot', rate >= 90);
+        tTotal += total; tOcc += occ;
+        if (c.is_insurance) { iTotal += total; iOcc += occ; }
+      });
+      const ratio = tTotal > 0 ? (iTotal / tTotal) * 100 : 0;
+      summaryEl.innerHTML = `
+        <strong>即時計算預覽</strong><br />
+        總病床：${tTotal} 床，佔床 ${tOcc}，空床 ${tTotal - tOcc}，佔床率 ${fmtPct(tTotal > 0 ? (tOcc / tTotal) * 100 : 0)}<br />
+        保險病床數：${iTotal} 床，佔床 ${iOcc}，空床 ${iTotal - iOcc}，佔床率 ${fmtPct(iTotal > 0 ? (iOcc / iTotal) * 100 : 0)}<br />
+        急性保險病床比率：<strong>${fmtPct(ratio)}</strong>`;
+    }
+
+    async function load() {
+      const rep = await (await fetch('/api/report', { cache: 'no-store' })).json();
+      rowsEl.innerHTML = '';
+      rep.categories.forEach((c) => rowsEl.appendChild(catRow(c)));
+      notesEl.innerHTML = '';
+      rep.notes.forEach((n) => notesEl.appendChild(noteRow(n)));
+      recalc();
+    }
+
+    document.getElementById('addBtn').addEventListener('click', () => { rowsEl.appendChild(catRow()); recalc(); });
+    document.getElementById('addNoteBtn').addEventListener('click', () => notesEl.appendChild(noteRow()));
+    document.getElementById('reloadBtn').addEventListener('click', () => load().then(() => toast('已重新載入')));
+
+    document.getElementById('saveBtn').addEventListener('click', async () => {
+      const payload = collect();
+      if (payload.categories.length === 0) return toast('至少需要一筆病房類別', true);
+      try {
+        const res = await fetch('/api/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) throw new Error(data.error || '儲存失敗');
+        toast('✓ 已儲存，前台已更新');
+        await load();
+      } catch (e) {
+        toast(String(e.message || e), true);
+      }
+    });
+
+    load();
+  </script>
+</body>
+</html>

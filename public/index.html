@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>杏永醫院病床利用情形統計日報表</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="report-wrap">
+    <h1 class="report-title" id="title">杏永醫院病床利用情形統計日報表</h1>
+
+    <div class="report-card">
+      <div class="sy-mark">SY</div>
+      <table class="report">
+        <thead>
+          <tr>
+            <th class="name">病房類別</th>
+            <th>病床數</th>
+            <th>佔床數</th>
+            <th>空床數</th>
+            <th>佔床率</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"><!-- 由 JS 產生 --></tbody>
+      </table>
+    </div>
+
+    <div class="notes">
+      <div class="notes-title">註：</div>
+      <ol id="notes"></ol>
+    </div>
+
+    <div class="updated" id="updated"></div>
+    <div class="conn-warn" id="warn">⚠ 無法連線至伺服器，顯示為最後一次資料</div>
+  </div>
+
+  <script type="module">
+    import { toROC, fmtPct, getReport } from './common.js';
+
+    const tbody = document.getElementById('tbody');
+    const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+
+    function rateCell(rate) {
+      const hot = rate >= 90 ? ' rate-hot' : '';
+      return `<td class="${hot.trim()}">${fmtPct(rate)}</td>`;
+    }
+
+    function dataRow(r, cls = '') {
+      return `<tr class="${cls}">
+        <td class="name">${esc(r.name)}</td>
+        <td>${r.total}</td>
+        <td>${r.occupied}</td>
+        <td>${r.empty}</td>
+        ${rateCell(r.rate)}
+      </tr>`;
+    }
+
+    function render(rep) {
+      document.getElementById('title').textContent = rep.title;
+      document.title = rep.title;
+
+      let html = rep.categories.map((c) => dataRow(c)).join('');
+      html += dataRow(rep.total, 'row-total');
+      html += dataRow(rep.insurance, 'row-insurance');
+      html += `<tr class="row-ratio">
+        <td class="name">急性保險病床比率</td>
+        <td colspan="4">${fmtPct(rep.acuteInsuranceRatio)}</td>
+      </tr>`;
+      tbody.innerHTML = html;
+
+      document.getElementById('notes').innerHTML =
+        rep.notes.map((n) => `<li>${esc(n)}</li>`).join('');
+      document.getElementById('updated').textContent = '更新時間：' + toROC(rep.updated_at);
+    }
+
+    async function refresh() {
+      try {
+        const rep = await getReport();
+        render(rep);
+        document.getElementById('warn').style.display = 'none';
+      } catch {
+        document.getElementById('warn').style.display = 'block';
+      }
+    }
+
+    refresh();
+    setInterval(refresh, 30000); // 每 30 秒自動更新
+  </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "shingyong-bed-dashboard",
+  "version": "1.0.0",
+  "description": "杏永醫院住院動態網頁 — 病床利用情形統計 (前台顯示 + 後台更新)",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  }
+}

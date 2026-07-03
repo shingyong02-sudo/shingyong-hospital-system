@@ -1,0 +1,165 @@
+:root {
+  --ink: #1a1a1a;
+  --line: #333;
+  --leaf-green: #d9e8b0;
+  --leaf-orange: #f6d5c0;
+  --header-bg: #ffffff;
+  --accent: #2e7d32;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "DFKai-SB", "標楷體", "BiauKai", "KaiTi", "Noto Serif TC", serif;
+  color: var(--ink);
+  background: #f4f4ef;
+}
+
+/* ---------- 前台顯示 ---------- */
+.report-wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 24px 40px;
+  position: relative;
+}
+
+.report-title {
+  text-align: center;
+  font-size: clamp(26px, 3.4vw, 46px);
+  font-weight: 700;
+  letter-spacing: 3px;
+  margin: 8px 0 22px;
+}
+
+.report-card {
+  position: relative;
+  background: #fff;
+  border: 2px solid var(--line);
+  overflow: hidden;
+}
+
+/* SY 葉子浮水印 */
+.report-card::before,
+.report-card::after {
+  content: "";
+  position: absolute;
+  width: 46%;
+  height: 60%;
+  top: 18%;
+  border-radius: 60% 40% 55% 45% / 55% 55% 45% 45%;
+  z-index: 0;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.report-card::before { left: 20%; background: var(--leaf-orange); transform: rotate(-18deg); }
+.report-card::after  { left: 40%; background: var(--leaf-green);  transform: rotate(18deg); }
+.report-card .sy-mark {
+  position: absolute;
+  top: 42%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 120px; font-weight: 800; color: #cfcf8f;
+  opacity: 0.35; z-index: 0; letter-spacing: 4px; pointer-events: none;
+}
+
+table.report {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(16px, 1.8vw, 26px);
+}
+table.report th, table.report td {
+  border: 1.5px solid var(--line);
+  padding: 12px 8px;
+  text-align: center;
+  white-space: nowrap;
+}
+table.report thead th {
+  background: rgba(255,255,255,0.7);
+  font-size: 1.05em;
+  font-weight: 700;
+}
+table.report td.name, table.report th.name { min-width: 210px; }
+tr.row-total td, tr.row-insurance td { font-weight: 700; }
+tr.row-total td { background: rgba(217,232,176,0.35); }
+tr.row-insurance td { background: rgba(246,213,192,0.30); }
+tr.row-ratio td {
+  font-weight: 700;
+  font-size: 1.1em;
+  background: rgba(255,255,255,0.6);
+}
+.rate-hot { color: #c62828; }
+
+.notes {
+  position: relative; z-index: 1;
+  background: #fff;
+  border: 2px solid var(--line);
+  border-top: none;
+  padding: 18px 22px;
+  font-size: clamp(14px, 1.4vw, 20px);
+  line-height: 1.9;
+}
+.notes .notes-title { font-weight: 700; margin-bottom: 4px; }
+.notes ol { margin: 0; padding-left: 1.6em; }
+
+.updated {
+  text-align: right;
+  margin-top: 14px;
+  font-size: clamp(14px, 1.4vw, 20px);
+  font-weight: 700;
+}
+.conn-warn {
+  text-align: center; color: #c62828; margin-top: 8px; font-weight: 700;
+  display: none;
+}
+
+/* ---------- 後台 ---------- */
+.admin-wrap {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+  font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+}
+.admin-wrap h1 { font-size: 26px; margin: 0 0 4px; }
+.admin-wrap .sub { color: #666; margin: 0 0 20px; font-size: 14px; }
+.topbar { display: flex; gap: 12px; align-items: center; margin-bottom: 18px; flex-wrap: wrap; }
+.btn {
+  border: none; border-radius: 8px; padding: 10px 18px; font-size: 15px;
+  cursor: pointer; font-weight: 600;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #276b2b; }
+.btn-ghost { background: #eee; color: #333; }
+.btn-ghost:hover { background: #e0e0e0; }
+.btn-danger { background: #ffe3e3; color: #c62828; }
+.btn-sm { padding: 6px 12px; font-size: 13px; }
+a.link { color: var(--accent); text-decoration: none; font-weight: 600; }
+
+table.admin { width: 100%; border-collapse: collapse; background: #fff; }
+table.admin th, table.admin td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+table.admin thead th { background: #f0f4ec; font-size: 14px; }
+table.admin input[type="text"] { width: 100%; min-width: 120px; }
+table.admin input[type="number"] { width: 80px; text-align: center; }
+table.admin input { padding: 7px 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+.calc { color: #2e7d32; font-weight: 700; }
+.calc.hot { color: #c62828; }
+
+.notes-editor { margin-top: 22px; }
+.notes-editor h2 { font-size: 18px; }
+.notes-editor .note-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.notes-editor textarea {
+  flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 6px;
+  font-size: 15px; font-family: inherit; resize: vertical; min-height: 44px;
+}
+.summary-box {
+  margin-top: 22px; background: #f0f4ec; border: 1px solid #cdd9c0;
+  border-radius: 10px; padding: 14px 18px; font-size: 15px; line-height: 1.9;
+}
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: #333; color: #fff; padding: 12px 22px; border-radius: 30px;
+  font-size: 15px; opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 50;
+}
+.toast.show { opacity: 1; }
+.toast.err { background: #c62828; }
