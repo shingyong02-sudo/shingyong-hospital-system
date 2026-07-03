@@ -1,4 +1,4 @@
-# 執行期資料庫（每次啟動會由 db.js 依 PDF 初始值自動建立，不納入版控）
+# 執行期資料（本機用）
 data/
 *.db
 *.db-journal
@@ -9,9 +9,10 @@ data/
 node_modules/
 npm-debug.log*
 
-# 環境變數與密鑰
+# 環境變數與密鑰（但保留範本 .env.example）
 .env
 .env.*
+!.env.example
 
 # 編輯器 / 系統
 .vscode/
