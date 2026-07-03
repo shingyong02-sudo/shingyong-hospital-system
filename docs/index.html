@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>杏永醫院病床利用情形統計日報表</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="report-wrap">
+    <h1 class="report-title" id="title">杏永醫院病床利用情形統計日報表</h1>
+
+    <div class="report-card">
+      <div class="sy-mark">SY</div>
+      <table class="report">
+        <thead>
+          <tr>
+            <th class="name">病房類別</th>
+            <th>病床數</th>
+            <th>佔床數</th>
+            <th>空床數</th>
+            <th>佔床率</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="notes">
+      <div class="notes-title">註：</div>
+      <ol id="notes"></ol>
+    </div>
+
+    <div class="updated" id="updated"></div>
+    <div class="conn-warn" id="warn">⚠ 無法連線至資料庫，請稍後重試</div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

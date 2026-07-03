@@ -1,0 +1,113 @@
+:root {
+  --ink: #1a1a1a;
+  --line: #333;
+  --leaf-green: #d9e8b0;
+  --leaf-orange: #f6d5c0;
+  --accent: #2e7d32;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "DFKai-SB", "標楷體", "BiauKai", "KaiTi", "Noto Serif TC", serif;
+  color: var(--ink);
+  background: #f4f4ef;
+}
+
+.report-wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 24px 40px;
+  position: relative;
+}
+
+.report-title {
+  text-align: center;
+  font-size: clamp(26px, 3.4vw, 46px);
+  font-weight: 700;
+  letter-spacing: 3px;
+  margin: 8px 0 22px;
+}
+
+.report-card {
+  position: relative;
+  background: #fff;
+  border: 2px solid var(--line);
+  overflow: hidden;
+}
+
+/* SY 葉子浮水印 */
+.report-card::before,
+.report-card::after {
+  content: "";
+  position: absolute;
+  width: 46%;
+  height: 60%;
+  top: 18%;
+  border-radius: 60% 40% 55% 45% / 55% 55% 45% 45%;
+  z-index: 0;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.report-card::before { left: 20%; background: var(--leaf-orange); transform: rotate(-18deg); }
+.report-card::after  { left: 40%; background: var(--leaf-green);  transform: rotate(18deg); }
+.report-card .sy-mark {
+  position: absolute;
+  top: 42%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 120px; font-weight: 800; color: #cfcf8f;
+  opacity: 0.35; z-index: 0; letter-spacing: 4px; pointer-events: none;
+}
+
+table.report {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(16px, 1.8vw, 26px);
+}
+table.report th, table.report td {
+  border: 1.5px solid var(--line);
+  padding: 12px 8px;
+  text-align: center;
+  white-space: nowrap;
+}
+table.report thead th {
+  background: rgba(255,255,255,0.7);
+  font-size: 1.05em;
+  font-weight: 700;
+}
+table.report td.name, table.report th.name { min-width: 210px; }
+tr.row-total td, tr.row-insurance td { font-weight: 700; }
+tr.row-total td { background: rgba(217,232,176,0.35); }
+tr.row-insurance td { background: rgba(246,213,192,0.30); }
+tr.row-ratio td {
+  font-weight: 700;
+  font-size: 1.1em;
+  background: rgba(255,255,255,0.6);
+}
+.rate-hot { color: #c62828; }
+
+.notes {
+  position: relative; z-index: 1;
+  background: #fff;
+  border: 2px solid var(--line);
+  border-top: none;
+  padding: 18px 22px;
+  font-size: clamp(14px, 1.4vw, 20px);
+  line-height: 1.9;
+}
+.notes .notes-title { font-weight: 700; margin-bottom: 4px; }
+.notes ol { margin: 0; padding-left: 1.6em; }
+
+.updated {
+  text-align: right;
+  margin-top: 14px;
+  font-size: clamp(14px, 1.4vw, 20px);
+  font-weight: 700;
+}
+.conn-warn {
+  text-align: center; color: #c62828; margin-top: 8px; font-weight: 700;
+  display: none;
+}
