@@ -112,3 +112,43 @@ tr.row-ratio td {
   text-align: center; color: #c62828; margin-top: 8px; font-weight: 700;
   display: none;
 }
+
+/* ---------- 後台（公開版） ---------- */
+.admin-wrap {
+  max-width: 1000px; margin: 0 auto; padding: 24px 20px 60px;
+  font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+}
+.admin-wrap h1 { font-size: 24px; margin: 0 0 4px; }
+.admin-wrap .sub { color: #666; margin: 0 0 20px; font-size: 14px; }
+.topbar { display: flex; gap: 12px; align-items: center; margin-bottom: 18px; flex-wrap: wrap; }
+.btn { border: none; border-radius: 8px; padding: 10px 18px; font-size: 15px; cursor: pointer; font-weight: 600; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #276b2b; }
+.btn-ghost { background: #eee; color: #333; }
+.btn-danger { background: #ffe3e3; color: #c62828; }
+.btn-sm { padding: 6px 12px; font-size: 13px; }
+a.link { color: var(--accent); text-decoration: none; font-weight: 600; }
+table.admin { width: 100%; border-collapse: collapse; background: #fff; }
+table.admin th, table.admin td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+table.admin thead th { background: #f0f4ec; font-size: 14px; }
+table.admin input[type="text"] { width: 100%; min-width: 120px; }
+table.admin input[type="number"] { width: 80px; text-align: center; }
+table.admin input { padding: 7px 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+.calc { color: #2e7d32; font-weight: 700; }
+.calc.hot { color: #c62828; }
+.notes-editor { margin-top: 22px; }
+.notes-editor h2 { font-size: 18px; }
+.notes-editor .note-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.notes-editor textarea { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; font-family: inherit; resize: vertical; min-height: 44px; }
+.summary-box { margin-top: 22px; background: #f0f4ec; border: 1px solid #cdd9c0; border-radius: 10px; padding: 14px 18px; font-size: 15px; line-height: 1.9; }
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 12px 22px; border-radius: 30px; font-size: 15px; opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 50; }
+.toast.show { opacity: 1; }
+.toast.err { background: #c62828; }
+
+/* 密碼登入閘 */
+.gate { max-width: 360px; margin: 12vh auto 0; background: #fff; border: 1px solid #ddd; border-radius: 14px; padding: 28px 26px; text-align: center; font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif; box-shadow: 0 8px 30px rgba(0,0,0,.06); }
+.gate h1 { font-size: 20px; margin: 0 0 6px; }
+.gate p { color: #666; font-size: 13px; margin: 0 0 18px; }
+.gate input { width: 100%; padding: 11px 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; margin-bottom: 12px; }
+.gate .err-msg { color: #c62828; font-size: 13px; min-height: 18px; margin-bottom: 8px; }
+.hidden { display: none !important; }
