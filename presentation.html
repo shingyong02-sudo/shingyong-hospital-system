@@ -6,135 +6,504 @@
   <title>智慧巡檢管理暨中央戰情室平台</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Anthropic Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1a3a52 0%, #0d1f2d 100%); color: #fff; overflow: hidden; height: 100vh; }
-    .presentation-container { width: 100vw; height: 100vh; display: flex; flex-direction: column; }
-    .slide { width: 100%; height: 100%; padding: 60px 80px; display: flex; flex-direction: column; justify-content: center; position: absolute; opacity: 0; transition: opacity 0.8s ease-in-out; z-index: 1; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0a1628 0%, #0f2647 50%, #051428 100%);
+      color: #fff;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    .presentation-container { width: 100vw; height: 100vh; position: relative; }
+
+    .slide {
+      width: 100%;
+      height: 100%;
+      padding: 60px 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: absolute;
+      opacity: 0;
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1;
+      background: linear-gradient(135deg, rgba(10, 22, 40, 0.95) 0%, rgba(15, 38, 71, 0.95) 100%);
+    }
+
     .slide.active { opacity: 1; z-index: 10; }
-    .slide-1 { align-items: center; text-align: center; }
+
+    .slide-1 { align-items: center; text-align: center; background: linear-gradient(135deg, #0a1628 0%, #1a4d7a 100%); }
     .slide-2 { align-items: flex-start; justify-content: center; }
-    .slide-3 { display: grid; grid-template-columns: 1fr 1.2fr; gap: 60px; align-items: center; padding: 60px 100px; }
-    .slide-3-left { display: flex; flex-direction: column; gap: 20px; }
-    .slide-3-right { display: flex; justify-content: center; align-items: center; background: rgba(0, 212, 255, 0.05); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 12px; padding: 30px; }
-    .slide-3-right svg { max-width: 100%; height: auto; filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3)); }
-    h1 { font-size: 3.5em; font-weight: bold; margin-bottom: 20px; color: #ffffff; line-height: 1.2; }
-    h2 { font-size: 1.6em; color: #00d4ff; margin-bottom: 10px; font-weight: 600; }
-    .content-box { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(0, 212, 255, 0.4); border-radius: 8px; padding: 20px; margin-bottom: 15px; backdrop-filter: blur(10px); }
-    .content-box h3 { font-size: 1.1em; color: #00d4ff; margin-bottom: 8px; font-weight: 600; }
-    .content-box p { font-size: 0.95em; line-height: 1.6; color: #d0d0d0; }
-    .page-indicator { position: fixed; bottom: 30px; right: 40px; font-size: 1.1em; color: #00d4ff; font-weight: 600; z-index: 100; }
-    .controls { position: fixed; bottom: 30px; left: 40px; display: flex; gap: 10px; z-index: 100; }
-    button { background: rgba(0, 212, 255, 0.15); border: 1px solid rgba(0, 212, 255, 0.5); color: #00d4ff; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-size: 0.95em; font-weight: 500; transition: all 0.3s; }
-    button:hover { background: rgba(0, 212, 255, 0.3); border-color: rgba(0, 212, 255, 0.8); }
-    .logo { position: fixed; top: 20px; right: 30px; font-size: 0.9em; color: #00d4ff; font-weight: 600; z-index: 50; }
-    .title-accent { color: #ff1493; }
+    .slide-3, .slide-4, .slide-5, .slide-6 {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 60px;
+      align-items: center;
+      padding: 60px 100px;
+    }
+
+    .slide-left { display: flex; flex-direction: column; gap: 20px; }
+    .slide-right {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(30, 80, 150, 0.1) 0%, rgba(50, 120, 200, 0.1) 100%);
+      border: 1px solid rgba(100, 200, 255, 0.2);
+      border-radius: 16px;
+      padding: 30px;
+      backdrop-filter: blur(20px);
+    }
+
+    .slide-right svg { max-width: 100%; height: auto; filter: drop-shadow(0 20px 50px rgba(0, 150, 255, 0.2)); }
+
+    /* 現代科技風格 - 漸進式設計 */
+    h1 {
+      font-size: 3.5em;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #ffffff;
+      line-height: 1.2;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #ffffff 0%, #a0d0ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    h2 {
+      font-size: 1.8em;
+      color: #00d4ff;
+      margin-bottom: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .content-box {
+      background: linear-gradient(135deg, rgba(20, 60, 120, 0.3) 0%, rgba(10, 40, 80, 0.3) 100%);
+      border: 1px solid rgba(100, 200, 255, 0.3);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 15px;
+      backdrop-filter: blur(15px);
+      transition: all 0.3s ease;
+    }
+
+    .content-box:hover {
+      border-color: rgba(100, 200, 255, 0.6);
+      background: linear-gradient(135deg, rgba(30, 80, 150, 0.4) 0%, rgba(20, 60, 120, 0.4) 100%);
+      transform: translateY(-5px);
+    }
+
+    .content-box h3 {
+      font-size: 1.2em;
+      color: #00ffff;
+      margin-bottom: 8px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .content-box p {
+      font-size: 1em;
+      line-height: 1.7;
+      color: #d0e8ff;
+    }
+
+    .page-indicator {
+      position: fixed;
+      bottom: 30px;
+      right: 40px;
+      font-size: 1.2em;
+      color: #00d4ff;
+      font-weight: 600;
+      z-index: 100;
+      background: rgba(10, 22, 40, 0.8);
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 212, 255, 0.3);
+    }
+
+    .controls {
+      position: fixed;
+      bottom: 30px;
+      left: 40px;
+      display: flex;
+      gap: 10px;
+      z-index: 100;
+    }
+
+    button {
+      background: linear-gradient(135deg, rgba(0, 150, 255, 0.2) 0%, rgba(0, 100, 200, 0.2) 100%);
+      border: 1px solid rgba(0, 212, 255, 0.5);
+      color: #00d4ff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, rgba(0, 200, 255, 0.4) 0%, rgba(0, 150, 255, 0.4) 100%);
+      border-color: rgba(0, 255, 255, 0.8);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+    }
+
+    .logo {
+      position: fixed;
+      top: 20px;
+      right: 30px;
+      font-size: 0.9em;
+      color: #00d4ff;
+      font-weight: 700;
+      z-index: 50;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: rgba(10, 22, 40, 0.8);
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 212, 255, 0.3);
+    }
+
+    .accent { color: #00ffff; text-shadow: 0 0 20px rgba(0, 255, 255, 0.5); }
+    .accent-pink { color: #ff006e; text-shadow: 0 0 20px rgba(255, 0, 110, 0.5); }
+
+    /* 動畫效果 */
+    @keyframes glow {
+      0%, 100% { text-shadow: 0 0 10px rgba(0, 212, 255, 0.5); }
+      50% { text-shadow: 0 0 30px rgba(0, 212, 255, 0.8); }
+    }
+
+    .glow { animation: glow 2s ease-in-out infinite; }
+
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 30px; }
   </style>
 </head>
 <body>
   <div class="presentation-container">
     <!-- 第1頁：封面 -->
     <div class="slide slide-1 active">
-      <div style="margin-bottom: 100px;">
-        <h1 style="font-size: 2.8em; margin-bottom: 10px;">智慧巡檢管理暨</h1>
-        <h1 style="font-size: 2.8em;">中央戰情室平台</h1>
+      <div style="margin-bottom: 80px;">
+        <div style="font-size: 0.9em; color: #00d4ff; margin-bottom: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;">新世代管理解決方案</div>
+        <h1 style="font-size: 3.2em; background: linear-gradient(135deg, #00ffff 0%, #0099ff 50%, #00ccff 100%); -webkit-background-clip: text;">
+          智慧巡檢管理暨<br>中央戰情室平台
+        </h1>
       </div>
-      <div style="font-size: 1.3em; color: #00d4ff; margin-top: 60px; font-weight: 500;">建置方案與推動策略</div>
-      <div style="font-size: 0.95em; color: #888888; margin-top: 80px;">臺北農產運銷股份有限公司 • 第一果菜批發市場</div>
+      <div style="font-size: 1.4em; color: #00d4ff; margin-top: 50px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">建置方案與推動策略</div>
+      <div style="font-size: 1em; color: #6699cc; margin-top: 60px;">臺北農產運銷股份有限公司 • 第一果菜批發市場</div>
     </div>
 
     <!-- 第2頁：問題意識 -->
     <div class="slide slide-2">
-      <div style="max-width: 900px;">
-        <div style="color: #00d4ff; font-size: 1.1em; margin-bottom: 20px; font-weight: 500;">WHY • 問題意識</div>
-        <h1 style="font-size: 2.5em; margin-bottom: 30px;">紙本與 Excel 作業，<br><span class="title-accent">還撐得住大型市場的管理需求嗎？</span></h1>
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; margin-top: 50px;">
+      <div style="max-width: 950px;">
+        <div style="color: #00d4ff; font-size: 1.2em; margin-bottom: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">◆ 現狀挑戰</div>
+        <h1 style="font-size: 2.8em; margin-bottom: 40px;">紙本與 Excel 作業，<br><span class="accent-pink">還撐得住大型市場的管理需求嗎？</span></h1>
+        <div class="grid-3">
           <div class="content-box">
-            <h3>❌ 人工巡檢效率低</h3>
-            <p>定時定點巡檢，覆蓋度有限、效率低下</p>
+            <h3>❌ 效率低落</h3>
+            <p>人工巡檢覆蓋度有限，無法即時掌握全局狀況</p>
           </div>
           <div class="content-box">
-            <h3>❌ 資訊不透明</h3>
-            <p>紙本記錄、數據分散，無法即時掌握狀況</p>
+            <h3>❌ 資訊分散</h3>
+            <p>紙本記錄難以追蹤，數據無法整合分析</p>
           </div>
           <div class="content-box">
-            <h3>❌ 管理追蹤困難</h3>
-            <p>無整體管理平台，決策層無法數據驅動</p>
+            <h3>❌ 決策滯後</h3>
+            <p>管理層缺乏即時數據，決策效能低下</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 第3頁：既有系統限制 - 含圖片 -->
+    <!-- 第3頁：系統缺口 -->
     <div class="slide slide-3">
-      <div class="slide-3-left">
+      <div class="slide-left">
         <div>
-          <div style="color: #00d4ff; font-size: 1em; margin-bottom: 15px; font-weight: 500;">WHY • 既有系統限制</div>
-          <h1 style="font-size: 2.2em; margin-bottom: 30px;">既有系統能監控，<br>卻無法管理</h1>
+          <div style="color: #00d4ff; font-size: 1em; margin-bottom: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">◆ 系統限制</div>
+          <h1 style="font-size: 2.4em; margin-bottom: 30px;">既有系統<br><span class="accent">監控有餘</span><br><span class="accent-pink">管理不足</span></h1>
         </div>
         <div class="content-box">
-          <h3>現有 BMS 的功能邊界</h3>
-          <p>已整合機電環控子系統，但侷止於監視、蒐集與警報。</p>
+          <h3>現有 BMS 功能邊界</h3>
+          <p>已整合機電環控子系統，但侷止於監視、蒐集與警報。缺乏應用層的管理能力。</p>
         </div>
         <div class="content-box">
-          <h3>應用層的缺口</h3>
-          <p>缺乏設備履歷、巡檢排程、報修派工與生命週期管理，管理層無法整體掌握和決策。</p>
+          <h3>應用層關鍵缺口</h3>
+          <p>缺乏設備履歷、巡檢排程、報修派工、生命週期管理。管理層無法整體掌握和數據驅動決策。</p>
         </div>
       </div>
 
-      <div class="slide-3-right">
+      <div class="slide-right">
         <svg viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <style>
-              .svg-title { font-size: 20px; font-weight: bold; fill: #ffffff; }
-              .svg-subtitle { font-size: 14px; fill: #b0b0b0; }
-              .svg-layer-title { font-size: 12px; font-weight: 600; fill: white; }
-              .svg-box { stroke-width: 2.5; }
-              .svg-gap-box { fill: rgba(255, 77, 77, 0.25); stroke: #ff4d4d; stroke-width: 2.5; }
+              .tech-title { font-size: 18px; font-weight: bold; fill: #00ffff; }
+              .tech-subtitle { font-size: 13px; fill: #00d4ff; }
+              .tech-layer { font-size: 11px; font-weight: 600; fill: white; }
+              .tech-box { stroke-width: 2.5; }
+              .tech-gap { fill: rgba(255, 50, 100, 0.3); stroke: #ff3264; stroke-width: 2.5; }
             </style>
           </defs>
-          <text x="450" y="40" text-anchor="middle" class="svg-title">管理決策層缺口</text>
-          <text x="450" y="65" text-anchor="middle" class="svg-subtitle">現有系統 vs 所需能力</text>
+          <text x="450" y="35" text-anchor="middle" class="tech-title">管理決策層缺口分析</text>
+          <text x="450" y="55" text-anchor="middle" class="tech-subtitle">現有系統 vs 所需能力</text>
+
           <g>
-            <rect x="30" y="90" width="350" height="350" fill="rgba(74, 144, 226, 0.08)" rx="8" stroke="rgba(74, 144, 226, 0.3)" stroke-width="1.5"/>
-            <text x="205" y="120" text-anchor="middle" class="svg-subtitle" style="font-weight: 600;">現有系統</text>
-            <rect x="60" y="140" width="280" height="65" class="svg-box" fill="#4A90E2" fill-opacity="0.85" rx="4" stroke="#357ABD"/>
-            <text x="200" y="160" text-anchor="middle" class="svg-layer-title">📊 數據收集</text>
-            <text x="200" y="180" text-anchor="middle" style="font-size: 11px; fill: white; opacity: 0.9;">設備狀態、即時數據</text>
-            <rect x="60" y="220" width="280" height="65" class="svg-box" fill="#357ABD" fill-opacity="0.85" rx="4" stroke="#2563BD"/>
-            <text x="200" y="240" text-anchor="middle" class="svg-layer-title">👁️ 監控層</text>
-            <text x="200" y="260" text-anchor="middle" style="font-size: 11px; fill: white; opacity: 0.9;">監視、警報、狀態顯示</text>
-            <rect x="60" y="300" width="280" height="65" class="svg-gap-box" rx="4"/>
-            <text x="200" y="320" text-anchor="middle" class="svg-layer-title" fill="#ff4d4d">❌ 管理層缺失</text>
-            <text x="200" y="345" text-anchor="middle" style="font-size: 11px; fill: #ff6b6b;">無法執行、追蹤、最佳化</text>
+            <rect x="30" y="85" width="350" height="360" fill="rgba(100, 200, 255, 0.08)" rx="10" stroke="rgba(100, 200, 255, 0.3)" stroke-width="2"/>
+            <text x="205" y="115" text-anchor="middle" class="tech-subtitle" style="font-weight: 700;">現有系統</text>
+
+            <rect x="60" y="135" width="280" height="70" class="tech-box" fill="#0066ff" fill-opacity="0.7" rx="6" stroke="#0099ff"/>
+            <text x="200" y="158" text-anchor="middle" class="tech-layer">📊 數據收集層</text>
+            <text x="200" y="183" text-anchor="middle" style="font-size: 10px; fill: #99ddff;">設備狀態、即時數據</text>
+
+            <rect x="60" y="225" width="280" height="70" class="tech-box" fill="#0055dd" fill-opacity="0.7" rx="6" stroke="#0088ff"/>
+            <text x="200" y="248" text-anchor="middle" class="tech-layer">👁️ 監控層</text>
+            <text x="200" y="273" text-anchor="middle" style="font-size: 10px; fill: #99ddff;">監視、警報、狀態顯示</text>
+
+            <rect x="60" y="315" width="280" height="70" class="tech-gap" rx="6"/>
+            <text x="200" y="338" text-anchor="middle" class="tech-layer" fill="#ff6699">❌ 管理層缺失</text>
+            <text x="200" y="363" text-anchor="middle" style="font-size: 10px; fill: #ff99bb;">無法執行、追蹤、最佳化</text>
           </g>
+
           <g>
-            <rect x="520" y="90" width="350" height="350" fill="rgba(46, 204, 113, 0.08)" rx="8" stroke="rgba(46, 204, 113, 0.3)" stroke-width="1.5"/>
-            <text x="695" y="120" text-anchor="middle" class="svg-subtitle" style="font-weight: 600;">所需系統</text>
-            <rect x="550" y="140" width="280" height="65" class="svg-box" fill="#4A90E2" fill-opacity="0.85" rx="4" stroke="#357ABD"/>
-            <text x="690" y="160" text-anchor="middle" class="svg-layer-title">📊 數據收集</text>
-            <text x="690" y="180" text-anchor="middle" style="font-size: 11px; fill: white; opacity: 0.9;">履歷、派工、生命週期</text>
-            <rect x="550" y="220" width="280" height="65" class="svg-box" fill="#357ABD" fill-opacity="0.85" rx="4" stroke="#2563BD"/>
-            <text x="690" y="240" text-anchor="middle" class="svg-layer-title">👁️ 監控層</text>
-            <text x="690" y="260" text-anchor="middle" style="font-size: 11px; fill: white; opacity: 0.9;">即時監控、警報、狀態</text>
-            <rect x="550" y="300" width="280" height="65" class="svg-box" fill="#2ECC71" fill-opacity="0.85" rx="4" stroke="#27AE60"/>
-            <text x="690" y="320" text-anchor="middle" class="svg-layer-title">✅ 管理決策層</text>
-            <text x="690" y="345" text-anchor="middle" style="font-size: 11px; fill: white;">計畫、執行、追蹤、優化</text>
+            <rect x="520" y="85" width="350" height="360" fill="rgba(0, 255, 150, 0.08)" rx="10" stroke="rgba(0, 255, 150, 0.3)" stroke-width="2"/>
+            <text x="695" y="115" text-anchor="middle" class="tech-subtitle" style="font-weight: 700;">所需系統</text>
+
+            <rect x="550" y="135" width="280" height="70" class="tech-box" fill="#0066ff" fill-opacity="0.7" rx="6" stroke="#0099ff"/>
+            <text x="690" y="158" text-anchor="middle" class="tech-layer">📊 數據收集層</text>
+            <text x="690" y="183" text-anchor="middle" style="font-size: 10px; fill: #99ddff;">履歷、派工、生命週期</text>
+
+            <rect x="550" y="225" width="280" height="70" class="tech-box" fill="#0055dd" fill-opacity="0.7" rx="6" stroke="#0088ff"/>
+            <text x="690" y="248" text-anchor="middle" class="tech-layer">👁️ 監控層</text>
+            <text x="690" y="273" text-anchor="middle" style="font-size: 10px; fill: #99ddff;">即時監控、警報、狀態</text>
+
+            <rect x="550" y="315" width="280" height="70" class="tech-box" fill="#00cc66" fill-opacity="0.7" rx="6" stroke="#00ff99"/>
+            <text x="690" y="338" text-anchor="middle" class="tech-layer">✅ 管理決策層</text>
+            <text x="690" y="363" text-anchor="middle" style="font-size: 10px; fill: #99ffcc;">計畫、執行、追蹤、優化</text>
           </g>
+
           <g>
-            <line x1="420" y1="300" x2="480" y2="300" stroke="#ff4d4d" stroke-width="3" marker-end="url(#arrowhead)"/>
-            <text x="450" y="290" text-anchor="middle" style="font-size: 13px; fill: #ff4d4d; font-weight: bold;">缺口</text>
+            <line x1="410" y1="305" x2="480" y2="305" stroke="#ff3264" stroke-width="3" marker-end="url(#arrowhead)"/>
+            <text x="445" y="295" text-anchor="middle" style="font-size: 12px; fill: #ff3264; font-weight: bold;">缺口</text>
           </g>
+
           <defs>
             <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-              <polygon points="0 0, 10 3, 0 6" fill="#ff4d4d"/>
+              <polygon points="0 0, 10 3, 0 6" fill="#ff3264"/>
             </marker>
           </defs>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 第4頁：解決方案架構 -->
+    <div class="slide slide-4">
+      <div class="slide-left">
+        <div>
+          <div style="color: #00d4ff; font-size: 1em; margin-bottom: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">◆ 解決方案</div>
+          <h1 style="font-size: 2.4em; margin-bottom: 30px;">系統<span class="accent">架構</span><br>三層一體化</h1>
+        </div>
+        <div class="content-box">
+          <h3>📊 數據層</h3>
+          <p>建置統一的資料平台，整合所有設備及巡檢數據，確保資訊真實性與完整性。</p>
+        </div>
+        <div class="content-box">
+          <h3>👁️ 監控層</h3>
+          <p>實時監控系統狀態，及時發現問題，自動預警，確保設施安全運行。</p>
+        </div>
+        <div class="content-box">
+          <h3>⚡ 管理層</h3>
+          <p>提供決策支援，數據驅動管理，優化資源配置，提升營運效能。</p>
+        </div>
+      </div>
+
+      <div class="slide-right">
+        <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <style>
+              .arch-layer { font-size: 14px; font-weight: bold; fill: #00ffff; }
+              .arch-text { font-size: 12px; fill: #00d4ff; }
+              .arch-box { stroke-width: 2; }
+            </style>
+          </defs>
+
+          <!-- 管理決策層 -->
+          <rect x="80" y="50" width="640" height="100" fill="rgba(0, 200, 100, 0.2)" stroke="#00cc66" stroke-width="3" rx="8"/>
+          <text x="400" y="85" text-anchor="middle" class="arch-layer">⚡ 管理決策層</text>
+          <text x="400" y="110" text-anchor="middle" class="arch-text">數據分析 | 決策支援 | 資源優化 | 績效評估</text>
+
+          <!-- 監控層 -->
+          <rect x="80" y="170" width="640" height="100" fill="rgba(0, 150, 200, 0.2)" stroke="#0099ff" stroke-width="3" rx="8"/>
+          <text x="400" y="205" text-anchor="middle" class="arch-layer">👁️ 監控層</text>
+          <text x="400" y="230" text-anchor="middle" class="arch-text">即時監控 | 警報系統 | 狀態顯示 | 趨勢分析</text>
+
+          <!-- 數據層 -->
+          <rect x="80" y="290" width="640" height="100" fill="rgba(0, 100, 200, 0.2)" stroke="#0066ff" stroke-width="3" rx="8"/>
+          <text x="400" y="325" text-anchor="middle" class="arch-layer">📊 數據層</text>
+          <text x="400" y="350" text-anchor="middle" class="arch-text">設備管理 | 巡檢派工 | 履歷追蹤 | 生命週期</text>
+
+          <!-- 箭頭 -->
+          <g stroke="#00ffff" stroke-width="2" fill="none">
+            <path d="M 400 150 L 400 170" marker-end="url(#arrowdown)"/>
+            <path d="M 400 270 L 400 290" marker-end="url(#arrowdown)"/>
+          </g>
+
+          <defs>
+            <marker id="arrowdown" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10" stroke="#00ffff" fill="none"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 第5頁：實施流程 -->
+    <div class="slide slide-5">
+      <div class="slide-left">
+        <div>
+          <div style="color: #00d4ff; font-size: 1em; margin-bottom: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">◆ 推動策略</div>
+          <h1 style="font-size: 2.4em; margin-bottom: 30px;">四階段<br><span class="accent">實施計畫</span></h1>
+        </div>
+        <div class="content-box">
+          <h3>第1階段：規劃設計</h3>
+          <p>系統需求分析、架構設計、技術選型、資源規劃</p>
+        </div>
+        <div class="content-box">
+          <h3>第2階段：建置開發</h3>
+          <p>核心系統開發、功能模組建置、整合測試</p>
+        </div>
+        <div class="content-box">
+          <h3>第3階段：上線運營</h3>
+          <p>逐步上線、運營培訓、效能優化、持續改進</p>
+        </div>
+      </div>
+
+      <div class="slide-right">
+        <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <style>
+              .timeline-stage { font-size: 13px; font-weight: bold; fill: white; }
+              .timeline-label { font-size: 11px; fill: #00d4ff; }
+            </style>
+          </defs>
+
+          <!-- Timeline 線 -->
+          <line x1="100" y1="250" x2="700" y2="250" stroke="rgba(0, 150, 255, 0.3)" stroke-width="3"/>
+
+          <!-- Stage 1 -->
+          <circle cx="150" cy="250" r="35" fill="#ff6b35" stroke="#ff9966" stroke-width="2"/>
+          <text x="150" y="260" text-anchor="middle" class="timeline-stage">1</text>
+          <text x="150" y="300" text-anchor="middle" class="timeline-label">規劃設計</text>
+          <text x="150" y="320" text-anchor="middle" style="font-size: 10px; fill: #6699cc;">3個月</text>
+
+          <!-- Stage 2 -->
+          <circle cx="320" cy="250" r="35" fill="#4d96ff" stroke="#7db3ff" stroke-width="2"/>
+          <text x="320" y="260" text-anchor="middle" class="timeline-stage">2</text>
+          <text x="320" y="300" text-anchor="middle" class="timeline-label">建置開發</text>
+          <text x="320" y="320" text-anchor="middle" style="font-size: 10px; fill: #6699cc;">6個月</text>
+
+          <!-- Stage 3 -->
+          <circle cx="490" cy="250" r="35" fill="#00cc66" stroke="#33ff99" stroke-width="2"/>
+          <text x="490" y="260" text-anchor="middle" class="timeline-stage">3</text>
+          <text x="490" y="300" text-anchor="middle" class="timeline-label">上線運營</text>
+          <text x="490" y="320" text-anchor="middle" style="font-size: 10px; fill: #6699cc;">3個月</text>
+
+          <!-- Stage 4 -->
+          <circle cx="660" cy="250" r="35" fill="#00ffcc" stroke="#66ffdd" stroke-width="2"/>
+          <text x="660" y="260" text-anchor="middle" class="timeline-stage">4</text>
+          <text x="660" y="300" text-anchor="middle" class="timeline-label">持續優化</text>
+          <text x="660" y="320" text-anchor="middle" style="font-size: 10px; fill: #6699cc;">持續</text>
+
+          <!-- 底部說明 -->
+          <text x="400" y="420" text-anchor="middle" style="font-size: 12px; fill: #00d4ff; font-weight: bold;">總計：12+ 個月 | 迭代優化 | 風險可控</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 第6頁：預期效益 -->
+    <div class="slide slide-6">
+      <div class="slide-left">
+        <div>
+          <div style="color: #00d4ff; font-size: 1em; margin-bottom: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">◆ 預期效益</div>
+          <h1 style="font-size: 2.4em; margin-bottom: 30px;">數據驅動<br><span class="accent">效能提升</span></h1>
+        </div>
+        <div class="content-box">
+          <h3>📈 效率提升</h3>
+          <p>巡檢效率提升 60%、回應時間減少 70%、問題解決率提高 85%</p>
+        </div>
+        <div class="content-box">
+          <h3>💰 成本優化</h3>
+          <p>設備維護成本下降 40%、人力資源優化 35%、營運成本降低 30%</p>
+        </div>
+        <div class="content-box">
+          <h3>🎯 決策優化</h3>
+          <p>數據可視化決策、風險預警率 95%、營運透明度 100%</p>
+        </div>
+      </div>
+
+      <div class="slide-right">
+        <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <style>
+              .metric-label { font-size: 12px; fill: #00d4ff; font-weight: bold; }
+              .metric-value { font-size: 16px; fill: #00ffcc; font-weight: bold; }
+              .metric-unit { font-size: 11px; fill: #6699cc; }
+            </style>
+          </defs>
+
+          <!-- 效率提升 -->
+          <rect x="50" y="50" width="200" height="130" fill="rgba(100, 150, 255, 0.2)" stroke="#0099ff" stroke-width="2" rx="8"/>
+          <text x="150" y="75" text-anchor="middle" class="metric-label">巡檢效率</text>
+          <text x="150" y="115" text-anchor="middle" class="metric-value">↑ 60%</text>
+          <text x="150" y="140" text-anchor="middle" class="metric-unit">提升幅度</text>
+
+          <!-- 成本優化 -->
+          <rect x="300" y="50" width="200" height="130" fill="rgba(0, 200, 100, 0.2)" stroke="#00cc66" stroke-width="2" rx="8"/>
+          <text x="400" y="75" text-anchor="middle" class="metric-label">維護成本</text>
+          <text x="400" y="115" text-anchor="middle" class="metric-value">↓ 40%</text>
+          <text x="400" y="140" text-anchor="middle" class="metric-unit">降低幅度</text>
+
+          <!-- 決策優化 -->
+          <rect x="550" y="50" width="200" height="130" fill="rgba(255, 100, 50, 0.2)" stroke="#ff6b35" stroke-width="2" rx="8"/>
+          <text x="650" y="75" text-anchor="middle" class="metric-label">決策支援</text>
+          <text x="650" y="115" text-anchor="middle" class="metric-value">↑ 95%</text>
+          <text x="650" y="140" text-anchor="middle" class="metric-unit">預警率</text>
+
+          <!-- 柱狀圖 -->
+          <g>
+            <text x="400" y="250" text-anchor="middle" style="font-size: 14px; fill: #00ffff; font-weight: bold;">核心指標對比</text>
+
+            <!-- 回應時間 -->
+            <rect x="100" y="280" width="30" height="120" fill="rgba(255, 100, 100, 0.5)" stroke="#ff6666"/>
+            <text x="115" y="420" text-anchor="middle" style="font-size: 11px; fill: #00d4ff;">回應時間</text>
+            <text x="115" y="450" text-anchor="middle" style="font-size: 12px; fill: #00ffcc; font-weight: bold;">-70%</text>
+
+            <!-- 解決率 -->
+            <rect x="300" y="260" width="30" height="140" fill="rgba(0, 200, 100, 0.5)" stroke="#00ff66"/>
+            <text x="315" y="420" text-anchor="middle" style="font-size: 11px; fill: #00d4ff;">解決率</text>
+            <text x="315" y="450" text-anchor="middle" style="font-size: 12px; fill: #00ffcc; font-weight: bold;">+85%</text>
+
+            <!-- 透明度 -->
+            <rect x="500" y="240" width="30" height="160" fill="rgba(0, 150, 255, 0.5)" stroke="#0099ff"/>
+            <text x="515" y="420" text-anchor="middle" style="font-size: 11px; fill: #00d4ff;">透明度</text>
+            <text x="515" y="450" text-anchor="middle" style="font-size: 12px; fill: #00ffcc; font-weight: bold;">100%</text>
+
+            <!-- 人力優化 -->
+            <rect x="700" y="280" width="30" height="120" fill="rgba(255, 150, 50, 0.5)" stroke="#ff9933"/>
+            <text x="715" y="420" text-anchor="middle" style="font-size: 11px; fill: #00d4ff;">人力優化</text>
+            <text x="715" y="450" text-anchor="middle" style="font-size: 12px; fill: #00ffcc; font-weight: bold;">-35%</text>
+          </g>
         </svg>
       </div>
     </div>
   </div>
 
   <div class="logo">🏢 BEIHUONG MARKET</div>
-  <div class="page-indicator"><span id="current-page">1</span> / 14</div>
+  <div class="page-indicator"><span id="current-page">1</span> / 6</div>
   <div class="controls">
     <button onclick="previousSlide()">← 上一頁</button>
     <button onclick="nextSlide()">下一頁 →</button>
@@ -143,6 +512,7 @@
   <script>
     let currentSlide = 0;
     const slides = document.querySelectorAll('.slide');
+
     function showSlide(n) {
       slides.forEach(slide => slide.classList.remove('active'));
       if (n >= slides.length) currentSlide = 0;
@@ -150,8 +520,10 @@
       slides[currentSlide].classList.add('active');
       document.getElementById('current-page').textContent = currentSlide + 1;
     }
+
     function nextSlide() { currentSlide++; showSlide(currentSlide); }
     function previousSlide() { currentSlide--; showSlide(currentSlide); }
+
     document.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
       if (e.key === 'ArrowLeft') previousSlide();
