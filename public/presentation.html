@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
+  <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <title>醫院會議簡報</title>
+  <link rel="stylesheet" href="presentation-style.css" />
+</head>
+<body class="presentation-viewer">
+  <div class="presentation-container">
+    <!-- 簡報選擇器 -->
+    <div class="presentation-selector">
+      <select id="presentationSelect" class="presentation-dropdown">
+        <option value="">選擇簡報...</option>
+      </select>
+      <button class="btn-refresh" onclick="refreshList()">🔄 刷新</button>
+      <a href="/presentation-admin" class="btn-admin">⚙ 管理</a>
+    </div>
+
+    <!-- 簡報顯示區域 -->
+    <div id="presentationContent" class="presentation-content">
+      <div class="placeholder">選擇一個簡報開始查看</div>
+    </div>
+
+    <!-- 簡報控制 -->
+    <div class="presentation-controls">
+      <button class="btn-nav" id="prevSlide" onclick="previousSlide()">← 上一頁</button>
+      <span id="slideCounter" class="slide-counter">0/0</span>
+      <button class="btn-nav" id="nextSlide" onclick="nextSlide()">下一頁 →</button>
+      <button class="btn-toggle" id="toggleFullscreen" onclick="toggleFullscreen()">⛶ 全屏</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { getReport } from './common.js';
+
+    let presentations = [];
+    let currentPresentation = null;
+    let currentSlideIndex = 0;
+
+    // 初始化：獲取簡報列表
+    async function loadPresentations() {
+      try {
+        presentations = await fetch('/api/presentations').then(r => r.json());
+        const select = document.getElementById('presentationSelect');
+        select.innerHTML = '<option value="">選擇簡報...</option>';
+        presentations.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.textContent = `${p.title} (${p.style_version})`;
+          select.appendChild(opt);
+        });
+      } catch (err) {
+        console.error('加載簡報列表失敗:', err);
+      }
+    }
+
+    // 選擇簡報時
+    document.getElementById('presentationSelect').addEventListener('change', async (e) => {
+      if (!e.target.value) return;
+      try {
+        currentPresentation = await fetch(`/api/presentations/${e.target.value}`).then(r => r.json());
+        currentSlideIndex = 0;
+        renderPresentation();
+      } catch (err) {
+        console.error('加載簡報失敗:', err);
+      }
+    });
+
+    function renderPresentation() {
+      if (!currentPresentation) return;
+
+      const slides = JSON.parse(currentPresentation.content || '[]');
+      if (slides.length === 0) {
+        document.getElementById('presentationContent').innerHTML = '<div class="placeholder">簡報無內容</div>';
+        document.getElementById('slideCounter').textContent = '0/0';
+        return;
+      }
+
+      const slide = slides[currentSlideIndex];
+      const container = document.getElementById('presentationContent');
+
+      // 根據樣式版本應用不同的 CSS 類
+      container.className = `presentation-content style-${currentPresentation.style_version}`;
+      container.innerHTML = `
+        <div class="slide">
+          <h1>${slide.title || ''}</h1>
+          <div class="slide-content">${slide.content || ''}</div>
+          ${slide.image ? `<img src="${slide.image}" class="slide-image" alt="slide-image">` : ''}
+        </div>
+      `;
+
+      document.getElementById('slideCounter').textContent = `${currentSlideIndex + 1}/${slides.length}`;
+      document.getElementById('prevSlide').disabled = currentSlideIndex === 0;
+      document.getElementById('nextSlide').disabled = currentSlideIndex === slides.length - 1;
+    }
+
+    window.previousSlide = () => {
+      if (currentSlideIndex > 0) {
+        currentSlideIndex--;
+        renderPresentation();
+      }
+    };
+
+    window.nextSlide = () => {
+      const slides = JSON.parse(currentPresentation.content || '[]');
+      if (currentSlideIndex < slides.length - 1) {
+        currentSlideIndex++;
+        renderPresentation();
+      }
+    };
+
+    window.toggleFullscreen = () => {
+      const elem = document.documentElement;
+      if (!document.fullscreenElement) {
+        elem.requestFullscreen().catch(err => console.error(err));
+      } else {
+        document.exitFullscreen();
+      }
+    };
+
+    window.refreshList = () => {
+      loadPresentations();
+    };
+
+    // 鍵盤控制
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') window.previousSlide();
+      if (e.key === 'ArrowRight') window.nextSlide();
+      if (e.key === 'f' || e.key === 'F') window.toggleFullscreen();
+    });
+
+    loadPresentations();
+  </script>
+</body>
+</html>

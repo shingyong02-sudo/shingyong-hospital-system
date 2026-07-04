@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
+  <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <title>簡報管理 - 杏永醫院</title>
+  <link rel="stylesheet" href="presentation-admin-style.css" />
+</head>
+<body class="admin-page">
+  <div class="admin-container">
+    <header class="admin-header">
+      <h1>📊 會議簡報管理</h1>
+      <div class="header-actions">
+        <a href="/presentation" class="btn btn-secondary">查看簡報</a>
+        <a href="/admin" class="btn btn-secondary">返回醫院首頁</a>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <!-- 新建簡報區域 -->
+      <section class="form-section">
+        <h2>新建簡報</h2>
+        <form id="newPresentationForm">
+          <div class="form-group">
+            <label for="newTitle">簡報標題：</label>
+            <input type="text" id="newTitle" placeholder="輸入簡報標題" required />
+          </div>
+
+          <div class="form-group">
+            <label for="styleVersion">樣式版本：</label>
+            <select id="styleVersion" required>
+              <option value="soil-dark">SOIL 深色科技版</option>
+              <option value="agriculture-brand">北農品牌版</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="newContent">簡報內容 (JSON)：</label>
+            <textarea id="newContent" placeholder='[{"title":"標題","content":"內容","image":""}]' rows="6" required></textarea>
+            <small>格式：陣列，每個物件包含 title, content, image 等欄位</small>
+          </div>
+
+          <button type="submit" class="btn btn-primary">建立簡報</button>
+        </form>
+      </section>
+
+      <!-- 簡報列表 -->
+      <section class="list-section">
+        <h2>現有簡報</h2>
+        <div id="presentationsList" class="presentations-list">
+          <div class="loading">正在加載...</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 編輯模態框 -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeEditModal()">&times;</span>
+      <h2>編輯簡報</h2>
+      <form id="editForm">
+        <div class="form-group">
+          <label for="editTitle">標題：</label>
+          <input type="text" id="editTitle" required />
+        </div>
+
+        <div class="form-group">
+          <label for="editStyleVersion">樣式版本：</label>
+          <select id="editStyleVersion" required>
+            <option value="soil-dark">SOIL 深色科技版</option>
+            <option value="agriculture-brand">北農品牌版</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="editContent">內容：</label>
+          <textarea id="editContent" rows="6" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="editIsActive">
+            <input type="checkbox" id="editIsActive" />
+            啟用此簡報
+          </label>
+        </div>
+
+        <div class="modal-buttons">
+          <button type="submit" class="btn btn-primary">保存變更</button>
+          <button type="button" class="btn btn-secondary" onclick="closeEditModal()">取消</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    let presentations = [];
+    let editingId = null;
+
+    // 加載簡報列表
+    async function loadPresentations() {
+      try {
+        presentations = await fetch('/api/presentations').then(r => r.json());
+        renderList();
+      } catch (err) {
+        console.error('加載失敗:', err);
+        document.getElementById('presentationsList').innerHTML = `<div class="error">加載失敗: ${err.message}</div>`;
+      }
+    }
+
+    // 渲染簡報列表
+    function renderList() {
+      const list = document.getElementById('presentationsList');
+      if (presentations.length === 0) {
+        list.innerHTML = '<div class="empty">尚無簡報</div>';
+        return;
+      }
+
+      list.innerHTML = presentations.map(p => `
+        <div class="presentation-card">
+          <div class="card-header">
+            <h3>${escapeHtml(p.title)}</h3>
+            <span class="badge badge-${p.style_version}">${p.style_version}</span>
+          </div>
+          <div class="card-meta">
+            <small>更新於：${new Date(p.updated_at).toLocaleString('zh-Hant')}</small>
+            <small>狀態：${p.is_active ? '✓ 啟用' : '✗ 停用'}</small>
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-sm btn-secondary" onclick="openEditModal(${p.id})">編輯</button>
+            <button class="btn btn-sm btn-danger" onclick="deletePresentation(${p.id})">刪除</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // 新建簡報
+    document.getElementById('newPresentationForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('newTitle').value;
+      const content = document.getElementById('newContent').value;
+      const style_version = document.getElementById('styleVersion').value;
+
+      try {
+        // 驗證 JSON
+        JSON.parse(content);
+
+        await fetch('/api/presentations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, content, style_version }),
+        });
+
+        document.getElementById('newPresentationForm').reset();
+        alert('簡報已建立');
+        loadPresentations();
+      } catch (err) {
+        alert('錯誤: ' + err.message);
+      }
+    });
+
+    // 打開編輯模態框
+    window.openEditModal = async (id) => {
+      editingId = id;
+      const p = presentations.find(x => x.id === id);
+      if (!p) return;
+
+      document.getElementById('editTitle').value = p.title;
+      document.getElementById('editStyleVersion').value = p.style_version;
+      document.getElementById('editContent').value = p.content;
+      document.getElementById('editIsActive').checked = p.is_active;
+      document.getElementById('editModal').style.display = 'block';
+    };
+
+    // 關閉編輯模態框
+    window.closeEditModal = () => {
+      document.getElementById('editModal').style.display = 'none';
+      editingId = null;
+    };
+
+    // 保存編輯
+    document.getElementById('editForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!editingId) return;
+
+      const title = document.getElementById('editTitle').value;
+      const content = document.getElementById('editContent').value;
+      const style_version = document.getElementById('editStyleVersion').value;
+      const is_active = document.getElementById('editIsActive').checked;
+
+      try {
+        JSON.parse(content);
+        await fetch(`/api/presentations/${editingId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, content, style_version, is_active }),
+        });
+
+        closeEditModal();
+        alert('簡報已更新');
+        loadPresentations();
+      } catch (err) {
+        alert('錯誤: ' + err.message);
+      }
+    });
+
+    // 刪除簡報
+    window.deletePresentation = async (id) => {
+      if (!confirm('確定要刪除這個簡報嗎？')) return;
+
+      try {
+        await fetch(`/api/presentations/${id}`, { method: 'DELETE' });
+        alert('簡報已刪除');
+        loadPresentations();
+      } catch (err) {
+        alert('刪除失敗: ' + err.message);
+      }
+    };
+
+    // HTML 轉義
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // 點擊模態外側關閉
+    window.onclick = (event) => {
+      const modal = document.getElementById('editModal');
+      if (event.target === modal) {
+        closeEditModal();
+      }
+    };
+
+    loadPresentations();
+  </script>
+</body>
+</html>
