@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智慧巡檢管理暨中央戰情室平台</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Anthropic Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1a3a52 0%, #0d1f2d 100%); color: #fff; overflow: hidden; height: 100vh; }
+    .presentation-container { width: 100vw; height: 100vh; display: flex; flex-direction: column; }
+    .slide { width: 100%; height: 100%; padding: 60px 80px; display: flex; flex-direction: column; justify-content: center; position: absolute; opacity: 0; transition: opacity 0.8s ease-in-out; z-index: 1; }
+    .slide.active { opacity: 1; z-index: 10; }
+    .slide-1 { align-items: center; text-align: center; }
+    .slide-2 { align-items: flex-start; justify-content: center; }
+    .slide-3 { display: grid; grid-template-columns: 1fr 1.2fr; gap: 60px; align-items: center; padding: 60px 100px; }
+    .slide-3-left { display: flex; flex-direction: column; gap: 20px; }
+    .slide-3-right { display: flex; justify-content: center; align-items: center; background: rgba(0, 212, 255, 0.05); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 12px; padding: 30px; }
+    .slide-3-right svg { max-width: 100%; height: auto; filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3)); }
+    h1 { font-size: 3.5em; font-weight: bold; margin-bottom: 20px; color: #ffffff; line-height: 1.2; }
+    h2 { font-size: 1.6em; color: #00d4ff; margin-bottom: 10px; font-weight: 600; }
+    .content-box { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(0, 212, 255, 0.4); border-radius: 8px; padding: 20px; margin-bottom: 15px; backdrop-filter: blur(10px); }
+    .content-box h3 { font-size: 1.1em; color: #00d4ff; margin-bottom: 8px; font-weight: 600; }
+    .content-box p { font-size: 0.95em; line-height: 1.6; color: #d0d0d0; }
+    .page-indicator { position: fixed; bottom: 30px; right: 40px; font-size: 1.1em; color: #00d4ff; font-weight: 600; z-index: 100; }
+    .controls { position: fixed; bottom: 30px; left: 40px; display: flex; gap: 10px; z-index: 100; }
+    button { background: rgba(0, 212, 255, 0.15); border: 1px solid rgba(0, 212, 255, 0.5); color: #00d4ff; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-size: 0.95em; font-weight: 500; transition: all 0.3s; }
+    button:hover { background: rgba(0, 212, 255, 0.3); border-color: rgba(0, 212, 255, 0.8); }
+    .logo { position: fixed; top: 20px; right: 30px; font-size: 0.9em; color: #00d4ff; font-weight: 600; z-index: 50; }
+    .title-accent { color: #ff1493; }
+  </style>
+</head>
+<body>
+  <div class="presentation-container">
+    <!-- 第1頁：封面 -->
+    <div class="slide slide-1 active">
+      <div style="margin-bottom: 100px;">
+        <h1 style="font-size: 2.8em; margin-bottom: 10px;">智慧巡檢管理暨</h1>
+        <h1 style="font-size: 2.8em;">中央戰情室平台</h1>
+      </div>
+      <div style="font-size: 1.3em; color: #00d4ff; margin-top: 60px; font-weight: 500;">建置方案與推動策略</div>
+      <div style="font-size: 0.95em; color: #888888; margin-top: 80px;">臺北農產運銷股份有限公司 • 第一果菜批發市場</div>
+    </div>
+
+    <!-- 第2頁：問題意識 -->
+    <div class="slide slide-2">
+      <div style="max-width: 900px;">
+        <div style="color: #00d4ff; font-size: 1.1em; margin-bottom: 20px; font-weight: 500;">WHY • 問題意識</div>
+        <h1 style="font-size: 2.5em; margin-bottom: 30px;">紙本與 Excel 作業，<br><span class="title-accent">還撐得住大型市場的管理需求嗎？</span></h1>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; margin-top: 50px;">
+          <div class="content-box">
+            <h3>❌ 人工巡檢效率低</h3>
+            <p>定時定點巡檢，覆蓋度有限、效率低下</p>
+          </div>
+          <div class="content-box">
+            <h3>❌ 資訊不透明</h3>
+            <p>紙本記錄、數據分散，無法即時掌握狀況</p>
+          </div>
+          <div class="content-box">
+            <h3>❌ 管理追蹤困難</h3>
+            <p>無整體管理平台，決策層無法數據驅動</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 第3頁：既有系統限制 - 含圖片 -->
+    <div class="slide slide-3">
+      <div class="slide-3-left">
+        <div>
+          <div style="color: #00d4ff; font-size: 1em; margin-bottom: 15px; font-weight: 500;">WHY • 既有系統限制</div>
+          <h1 style="font-size: 2.2em; margin-bottom: 30px;">既有系統能監控，<br>卻無法管理</h1>
+        </div>
+        <div class="content-box">
+          <h3>現有 BMS 的功能邊界</h3>
+          <p>已整合機電環控子系統，但侷止於監視、蒐集與警報。</p>
+        </div>
+        <div class="content-box">
+          <h3>應用層的缺口</h3>
+          <p>缺乏設備履歷、巡檢排程、報修派工與生命週期管理，管理層無法整體掌握和決策。</p>
+        </div>
+      </div>
+
+      <div class="slide-3-right">
+        <svg viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <style>
+              .svg-title { font-size: 20px; font-weight: bold; fill: #ffffff; }
+              .svg-subtitle { font-size: 14px; fill: #b0b0b0; }
+              .svg-layer-title { font-size: 12px; font-weight: 600; fill: white; }
+              .svg-box { stroke-width: 2.5; }
+              .svg-gap-box { fill: rgba(255, 77, 77, 0.25); stroke: #ff4d4d; stroke-width: 2.5; }
+            </style>
+          </defs>
+          <text x="450" y="40" text-anchor="middle" class="svg-title">管理決策層缺口</text>
+          <text x="450" y="65" text-anchor="middle" class="svg-subtitle">現有系統 vs 所需能力</text>
+          <g>
+            <rect x="30" y="90" width="350" height="350" fill="rgba(74, 144, 226, 0.08)" rx="8" stroke="rgba(74, 144, 226, 0.3)" stroke-width="1.5"/>
+            <text x="205" y="120" text-anchor="middle" class="svg-subtitle" style="font-weight: 600;">現有系統</text>
+            <rect x="60" y="140" width="280" height="65" class="svg-box" fill="#4A90E2" fill-opacity="0.85" rx="4" stroke="#357ABD"/>
+            <text x="200" y="160" text-anchor="middle" class="svg-layer-title">📊 數據收集</text>
+            <text x="200" y="180" text-anchor="middle" style="font-size: 11px; fill: white; opacity: 0.9;">設備狀態、即時數據</text>
+            <rect x="60" y="220" width="280" height="65" class="svg-box" fill="#357ABD" fill-opacity="0.85" rx="4" stroke="#2563BD"/>
+            <text x="200" y="240" text-anchor="middle" class="svg-layer-title">👁️ 監控層</text>
+            <text x="200" y="260" text-anchor="middle" style="font-size: 11px; fill: white; opacity: 0.9;">監視、警報、狀態顯示</text>
+            <rect x="60" y="300" width="280" height="65" class="svg-gap-box" rx="4"/>
+            <text x="200" y="320" text-anchor="middle" class="svg-layer-title" fill="#ff4d4d">❌ 管理層缺失</text>
+            <text x="200" y="345" text-anchor="middle" style="font-size: 11px; fill: #ff6b6b;">無法執行、追蹤、最佳化</text>
+          </g>
+          <g>
+            <rect x="520" y="90" width="350" height="350" fill="rgba(46, 204, 113, 0.08)" rx="8" stroke="rgba(46, 204, 113, 0.3)" stroke-width="1.5"/>
+            <text x="695" y="120" text-anchor="middle" class="svg-subtitle" style="font-weight: 600;">所需系統</text>
+            <rect x="550" y="140" width="280" height="65" class="svg-box" fill="#4A90E2" fill-opacity="0.85" rx="4" stroke="#357ABD"/>
+            <text x="690" y="160" text-anchor="middle" class="svg-layer-title">📊 數據收集</text>
+            <text x="690" y="180" text-anchor="middle" style="font-size: 11px; fill: white; opacity: 0.9;">履歷、派工、生命週期</text>
+            <rect x="550" y="220" width="280" height="65" class="svg-box" fill="#357ABD" fill-opacity="0.85" rx="4" stroke="#2563BD"/>
+            <text x="690" y="240" text-anchor="middle" class="svg-layer-title">👁️ 監控層</text>
+            <text x="690" y="260" text-anchor="middle" style="font-size: 11px; fill: white; opacity: 0.9;">即時監控、警報、狀態</text>
+            <rect x="550" y="300" width="280" height="65" class="svg-box" fill="#2ECC71" fill-opacity="0.85" rx="4" stroke="#27AE60"/>
+            <text x="690" y="320" text-anchor="middle" class="svg-layer-title">✅ 管理決策層</text>
+            <text x="690" y="345" text-anchor="middle" style="font-size: 11px; fill: white;">計畫、執行、追蹤、優化</text>
+          </g>
+          <g>
+            <line x1="420" y1="300" x2="480" y2="300" stroke="#ff4d4d" stroke-width="3" marker-end="url(#arrowhead)"/>
+            <text x="450" y="290" text-anchor="middle" style="font-size: 13px; fill: #ff4d4d; font-weight: bold;">缺口</text>
+          </g>
+          <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+              <polygon points="0 0, 10 3, 0 6" fill="#ff4d4d"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="logo">🏢 BEIHUONG MARKET</div>
+  <div class="page-indicator"><span id="current-page">1</span> / 14</div>
+  <div class="controls">
+    <button onclick="previousSlide()">← 上一頁</button>
+    <button onclick="nextSlide()">下一頁 →</button>
+  </div>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    function showSlide(n) {
+      slides.forEach(slide => slide.classList.remove('active'));
+      if (n >= slides.length) currentSlide = 0;
+      if (n < 0) currentSlide = slides.length - 1;
+      slides[currentSlide].classList.add('active');
+      document.getElementById('current-page').textContent = currentSlide + 1;
+    }
+    function nextSlide() { currentSlide++; showSlide(currentSlide); }
+    function previousSlide() { currentSlide--; showSlide(currentSlide); }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      if (e.key === 'ArrowLeft') previousSlide();
+    });
+  </script>
+</body>
+</html>
