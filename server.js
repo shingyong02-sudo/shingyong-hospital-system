@@ -90,11 +90,34 @@ function setSecurityHeaders(res) {
   res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
 }
 
+// Input validation utilities
+function validateString(str, fieldName, maxLen = 500) {
+  const s = String(str ?? '').trim();
+  if (s.length === 0) return '';
+  if (s.length > maxLen) throw new Error(`${fieldName}長度不能超過${maxLen}字`);
+  return s;
+}
+
+function validateInt(val, fieldName, min = 0, max = 10000) {
+  const n = Math.trunc(Number(val));
+  if (!Number.isFinite(n) || n < min || n > max) {
+    throw new Error(`${fieldName}必須在${min}到${max}之間的整數`);
+  }
+  return n;
+}
+
 // 驗證並整理後台送來的資料，再寫入 Supabase
 async function saveAll(payload) {
+  // Type checking
+  if (typeof payload !== 'object' || payload === null) {
+    throw new Error('無效的請求格式');
+  }
+
   const catsIn = Array.isArray(payload.categories) ? payload.categories : [];
   const notesIn = Array.isArray(payload.notes) ? payload.notes : [];
+
   if (catsIn.length === 0) throw new Error('至少需要一筆病房類別');
+  if (catsIn.length > 100) throw new Error('病房類別不能超過100筆');
 
   const clampInt = (v) => {
     const n = Math.trunc(Number(v));
@@ -102,13 +125,22 @@ async function saveAll(payload) {
   };
 
   const cats = catsIn.map((c, i) => {
-    const name = String(c.name ?? '').trim() || `病房${i + 1}`;
-    const total = clampInt(c.total);
-    let occupied = clampInt(c.occupied);
+    if (typeof c !== 'object' || c === null) {
+      throw new Error(`病房${i + 1}：無效的資料格式`);
+    }
+    const name = validateString(c.name, `病房${i + 1}名稱`, 100) || `病房${i + 1}`;
+    const total = validateInt(c.total, `病房${i + 1}總床數`, 0, 10000);
+    let occupied = validateInt(c.occupied, `病房${i + 1}佔床數`, 0, 10000);
     if (occupied > total) occupied = total; // 佔床數不可超過病床數
     return { name, total, occupied, is_insurance: !!c.is_insurance };
   });
-  const notes = notesIn.map((n) => String(n ?? '').trim()).filter(Boolean);
+
+  const notes = notesIn.map((n, i) => {
+    const note = validateString(n, `備註${i + 1}`, 500);
+    return note;
+  }).filter(Boolean);
+
+  if (notes.length > 50) throw new Error('備註不能超過50筆');
 
   await replaceAll(cats, notes);
 }
