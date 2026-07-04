@@ -45,7 +45,7 @@
   <div class="toast" id="toast"></div>
 
   <script type="module">
-    import { fmtPct } from './common.js';
+    import { fmtPct, escapeHtml } from './common.js';
 
     const rowsEl = document.getElementById('rows');
     const notesEl = document.getElementById('notes');
@@ -60,8 +60,10 @@
 
     function catRow(c = { name: '', total: 0, occupied: 0, is_insurance: true }) {
       const tr = document.createElement('tr');
+      // Safely escape name input value to prevent XSS
+      const safeName = (c.name || '').replace(/"/g, '&quot;');
       tr.innerHTML = `
-        <td><input type="text" class="f-name" value="${(c.name || '').replace(/"/g, '&quot;')}" placeholder="病房名稱" /></td>
+        <td><input type="text" class="f-name" value="${safeName}" placeholder="病房名稱" /></td>
         <td><input type="number" min="0" class="f-total" value="${c.total ?? 0}" /></td>
         <td><input type="number" min="0" class="f-occ" value="${c.occupied ?? 0}" /></td>
         <td class="calc f-empty">0</td>
@@ -76,7 +78,9 @@
     function noteRow(text = '') {
       const div = document.createElement('div');
       div.className = 'note-row';
-      div.innerHTML = `<textarea rows="1">${text.replace(/</g, '&lt;')}</textarea>
+      // Escape text to prevent XSS when displaying in textarea
+      const safeText = (text || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      div.innerHTML = `<textarea rows="1">${safeText}</textarea>
         <button class="btn btn-danger btn-sm">刪除</button>`;
       div.querySelector('button').addEventListener('click', () => div.remove());
       return div;

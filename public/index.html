@@ -36,10 +36,10 @@
   </div>
 
   <script type="module">
-    import { toROC, fmtPct, getReport } from './common.js';
+    import { toROC, fmtPct, getReport, escapeHtml } from './common.js';
 
     const tbody = document.getElementById('tbody');
-    const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+    const esc = escapeHtml;
 
     function rateCell(rate) {
       const hot = rate >= 90 ? ' rate-hot' : '';
