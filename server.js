@@ -3,7 +3,7 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { getWards, getNotes, getMeta, replaceAll } from './supabase.js';
+import { getWards, getNotes, getMeta, replaceAll, getPresentations, getPresentationById, createPresentation, updatePresentation, deletePresentation } from './supabase.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = join(__dirname, 'public');
@@ -81,6 +81,15 @@ function sendJSON(res, status, obj) {
   res.end(JSON.stringify(obj));
 }
 
+// 安全 HTTP Headers
+function setSecurityHeaders(res) {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+}
+
 // 驗證並整理後台送來的資料，再寫入 Supabase
 async function saveAll(payload) {
   const catsIn = Array.isArray(payload.categories) ? payload.categories : [];
@@ -114,7 +123,15 @@ async function serveStatic(req, res, urlPath) {
   }
   try {
     const buf = await readFile(filePath);
-    res.writeHead(200, { 'Content-Type': MIME[extname(filePath)] || 'application/octet-stream' });
+    const ext = extname(filePath);
+    const headers = { 'Content-Type': MIME[ext] || 'application/octet-stream' };
+
+    // Add CSP header for HTML files
+    if (ext === '.html') {
+      headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'module'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self';";
+    }
+
+    res.writeHead(200, headers);
     res.end(buf);
   } catch {
     res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
@@ -126,6 +143,9 @@ const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   const path = url.pathname;
 
+  // Apply security headers to all responses
+  setSecurityHeaders(res);
+
   try {
     if (path === '/api/report' && req.method === 'GET') {
       return sendJSON(res, 200, await buildReport());
@@ -135,6 +155,35 @@ const server = createServer(async (req, res) => {
       await saveAll(payload);
       return sendJSON(res, 200, { ok: true, report: await buildReport() });
     }
+
+    // 簡報 API
+    if (path === '/api/presentations' && req.method === 'GET') {
+      const presentations = await getPresentations();
+      return sendJSON(res, 200, presentations);
+    }
+    if (path.match(/^\/api\/presentations\/\d+$/) && req.method === 'GET') {
+      const id = parseInt(path.split('/')[3]);
+      const presentation = await getPresentationById(id);
+      if (!presentation) return sendJSON(res, 404, { ok: false, error: 'not found' });
+      return sendJSON(res, 200, presentation);
+    }
+    if (path === '/api/presentations' && req.method === 'POST') {
+      const payload = JSON.parse((await readBody(req)) || '{}');
+      const result = await createPresentation(payload.title, payload.content, payload.style_version);
+      return sendJSON(res, 201, { ok: true, data: result });
+    }
+    if (path.match(/^\/api\/presentations\/\d+$/) && req.method === 'PATCH') {
+      const id = parseInt(path.split('/')[3]);
+      const payload = JSON.parse((await readBody(req)) || '{}');
+      await updatePresentation(id, payload);
+      return sendJSON(res, 200, { ok: true });
+    }
+    if (path.match(/^\/api\/presentations\/\d+$/) && req.method === 'DELETE') {
+      const id = parseInt(path.split('/')[3]);
+      await deletePresentation(id);
+      return sendJSON(res, 200, { ok: true });
+    }
+
     if (path.startsWith('/api/')) {
       return sendJSON(res, 404, { ok: false, error: 'not found' });
     }
