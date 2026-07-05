@@ -101,3 +101,45 @@ export async function replaceAll(cats, notes) {
     body: JSON.stringify([{ key: 'updated_at', value: new Date().toISOString() }]),
   });
 }
+
+// 簡報系統函數
+export async function getPresentations() {
+  return sb('presentations?select=id,title,style_version,created_at,updated_at,is_active&order=updated_at.desc');
+}
+
+export async function getPresentationById(id) {
+  const rows = await sb(`presentations?id=eq.${id}&select=*`);
+  return rows[0] || null;
+}
+
+export async function createPresentation(title, content, style_version = 'soil-dark') {
+  const result = await sb('presentations', {
+    method: 'POST',
+    body: JSON.stringify({
+      title,
+      content,
+      style_version,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      is_active: true,
+    }),
+  });
+  return result;
+}
+
+export async function updatePresentation(id, { title, content, style_version, is_active }) {
+  return sb(`presentations?id=eq.${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      title: title !== undefined ? title : undefined,
+      content: content !== undefined ? content : undefined,
+      style_version: style_version !== undefined ? style_version : undefined,
+      is_active: is_active !== undefined ? is_active : undefined,
+      updated_at: new Date().toISOString(),
+    }),
+  });
+}
+
+export async function deletePresentation(id) {
+  return sb(`presentations?id=eq.${id}`, { method: 'DELETE' });
+}
