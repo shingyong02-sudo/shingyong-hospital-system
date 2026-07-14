@@ -5,7 +5,12 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "fix:accounts:check": "node scripts/fix-orphaned-accounts.js check",
+    "fix:accounts:fix": "node scripts/fix-orphaned-accounts.js fix",
+    "fix:accounts:preview": "node scripts/fix-orphaned-accounts.js fix --dry-run",
+    "fix:accounts:report": "node scripts/fix-orphaned-accounts.js report",
+    "fix:accounts:watch": "node scripts/watch-account-health.js"
   },
   "engines": {
     "node": ">=22.5.0"

@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>帳號管理 — 巡檢系統</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .form-section {
+      margin-bottom: 40px;
+      padding-bottom: 30px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .form-section h2 {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .form-group label .required {
+      color: #dc3545;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: all 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    .form-group input.error,
+    .form-group select.error {
+      border-color: #dc3545;
+      background-color: #fff5f5;
+    }
+
+    .form-group input.success,
+    .form-group select.success {
+      border-color: #28a745;
+      background-color: #f5fff5;
+    }
+
+    .error-msg {
+      display: none;
+      color: #dc3545;
+      font-size: 12px;
+      margin-top: 5px;
+      line-height: 1.5;
+    }
+
+    .error-msg.show {
+      display: block;
+    }
+
+    .success-msg {
+      display: none;
+      color: #28a745;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .success-msg.show {
+      display: block;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-start;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: #0056b3;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background-color: #545b62;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 16px 24px;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 9999;
+      max-width: 400px;
+      animation: slideIn 0.3s ease-out;
+      display: none;
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    .toast.success {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .toast.error {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .toast.info {
+      background-color: #17a2b8;
+      color: white;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .users-table thead {
+      background-color: #f8f9fa;
+      border-bottom: 2px solid #ddd;
+    }
+
+    .users-table th {
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .users-table td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+
+    .users-table tbody tr:hover {
+      background-color: #f5f5f5;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-active {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .status-inactive {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background-color: #c82333;
+    }
+
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>👤 帳號管理</h1>
+    <p class="subtitle">建立與管理系統帳號</p>
+
+    <!-- 建立帳號表單 -->
+    <div class="form-section">
+      <h2>建立新帳號</h2>
+      <form id="accountForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nameInput">
+              帳號名稱 <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="nameInput"
+              name="name"
+              placeholder="例：涂昆祺"
+              maxlength="50"
+            />
+            <small class="error-msg" id="nameError"></small>
+            <small class="success-msg" id="nameSuccess"></small>
+          </div>
+
+          <div class="form-group">
+            <label for="emailInput">
+              Email <span class="required">*</span>
+            </label>
+            <input
+              type="email"
+              id="emailInput"
+              name="email"
+              placeholder="例：kctu@tapmc.com.tw"
+            />
+            <small class="error-msg" id="emailError"></small>
+            <small class="success-msg" id="emailSuccess"></small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="roleSelect">角色</label>
+          <select id="roleSelect" name="role">
+            <option value="">-- 選擇角色 --</option>
+            <option value="admin">管理員</option>
+            <option value="supervisor">主管</option>
+            <option value="inspector">檢查員</option>
+            <option value="user">一般使用者</option>
+          </select>
+        </div>
+
+        <div class="button-group">
+          <button type="submit" class="btn btn-primary" id="submitBtn">
+            ✓ 建立帳號
+          </button>
+          <button type="reset" class="btn btn-secondary">
+            ↺ 清空
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- 帳號清單 -->
+    <div class="form-section">
+      <h2>現有帳號</h2>
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>帳號名稱</th>
+            <th>Email</th>
+            <th>角色</th>
+            <th>狀態</th>
+            <th>建立時間</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="usersList">
+          <tr>
+            <td colspan="6" style="text-align: center; color: #999;">
+              載入中...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 通知提示 -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ============================================
+    // 帳號驗證規則
+    // ============================================
+    const ValidationRules = {
+      name: {
+        required: true,
+        minLength: 2,
+        maxLength: 50,
+        pattern: /^[一-龥a-zA-Z0-9_-]+$/,
+        errorMessages: {
+          required: '帳號名稱不能為空',
+          minLength: '帳號名稱至少 2 個字',
+          maxLength: '帳號名稱最多 50 個字',
+          pattern: '帳號名稱只能包含中文、英文、數字、下划線、連字符'
+        }
+      },
+      email: {
+        required: true,
+        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        errorMessages: {
+          required: 'Email 不能為空',
+          pattern: 'Email 格式不正確'
+        }
+      }
+    };
+
+    // ============================================
+    // 驗證類
+    // ============================================
+    class AccountValidator {
+      static validateField(fieldName, value) {
+        const rules = ValidationRules[fieldName];
+        if (!rules) return { valid: true };
+
+        if (rules.required && (!value || value.trim() === '')) {
+          return {
+            valid: false,
+            error: rules.errorMessages.required
+          };
+        }
+
+        if (rules.minLength && value.length < rules.minLength) {
+          return {
+            valid: false,
+            error: rules.errorMessages.minLength
+          };
+        }
+
+        if (rules.maxLength && value.length > rules.maxLength) {
+          return {
+            valid: false,
+            error: rules.errorMessages.maxLength
+          };
+        }
+
+        if (rules.pattern && !rules.pattern.test(value)) {
+          return {
+            valid: false,
+            error: rules.errorMessages.pattern
+          };
+        }
+
+        return { valid: true };
+      }
+
+      static validateForm() {
+        const nameInput = document.getElementById('nameInput');
+        const emailInput = document.getElementById('emailInput');
+
+        const nameValidation = this.validateField('name', nameInput.value);
+        const emailValidation = this.validateField('email', emailInput.value);
+
+        this.showError('name', nameValidation);
+        this.showError('email', emailValidation);
+
+        return nameValidation.valid && emailValidation.valid;
+      }
+
+      static showError(fieldName, validation) {
+        const errorEl = document.getElementById(`${fieldName}Error`);
+        const successEl = document.getElementById(`${fieldName}Success`);
+        const inputEl = document.getElementById(`${fieldName}Input`);
+
+        if (!validation.valid) {
+          errorEl.textContent = validation.error;
+          errorEl.classList.add('show');
+          successEl.classList.remove('show');
+          inputEl.classList.add('error');
+          inputEl.classList.remove('success');
+        } else {
+          errorEl.classList.remove('show');
+          inputEl.classList.remove('error');
+          inputEl.classList.add('success');
+        }
+      }
+
+      static attachRealTimeValidation() {
+        ['name', 'email'].forEach((fieldName) => {
+          const inputEl = document.getElementById(`${fieldName}Input`);
+
+          inputEl.addEventListener('blur', () => {
+            const validation = this.validateField(fieldName, inputEl.value);
+            this.showError(fieldName, validation);
+          });
+
+          inputEl.addEventListener('input', () => {
+            if (inputEl.classList.contains('error')) {
+              const validation = this.validateField(fieldName, inputEl.value);
+              this.showError(fieldName, validation);
+            }
+          });
+        });
+      }
+    }
+
+    // ============================================
+    // 通知函數
+    // ============================================
+    function showToast(message, type = 'info', duration = 3000) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = `toast show ${type}`;
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, duration);
+    }
+
+    // ============================================
+    // 表單提交處理
+    // ============================================
+    async function handleCreateAccount(event) {
+      event.preventDefault();
+
+      if (!AccountValidator.validateForm()) {
+        showToast('❌ 請檢查表單資訊', 'error');
+        return;
+      }
+
+      const name = document.getElementById('nameInput').value.trim();
+      const email = document.getElementById('emailInput').value.trim();
+      const role = document.getElementById('roleSelect').value;
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = '建立中...';
+
+      try {
+        const response = await fetch('/api/accounts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, role })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || '帳號建立失敗');
+        }
+
+        showToast('✓ 帳號建立成功！', 'success');
+        document.getElementById('accountForm').reset();
+        await loadUsers();
+      } catch (error) {
+        showToast(`❌ ${error.message}`, 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '✓ 建立帳號';
+      }
+    }
+
+    // ============================================
+    // 載入帳號清單
+    // ============================================
+    async function loadUsers() {
+      try {
+        const response = await fetch('/api/accounts');
+        const users = await response.json();
+
+        const usersList = document.getElementById('usersList');
+
+        if (!Array.isArray(users) || users.length === 0) {
+          usersList.innerHTML = `
+            <tr>
+              <td colspan="6" style="text-align: center; color: #999;">
+                尚無帳號
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        usersList.innerHTML = users
+          .map(
+            (user) => `
+          <tr>
+            <td><strong>${user.name || '(未設定)'}</strong></td>
+            <td>${user.email}</td>
+            <td>${user.role || '一般使用者'}</td>
+            <td>
+              <span class="status-badge ${user.is_active ? 'status-active' : 'status-inactive'}">
+                ${user.is_active ? '啟用' : '停用'}
+              </span>
+            </td>
+            <td>${new Date(user.created_at).toLocaleDateString('zh-TW')}</td>
+            <td>
+              <button class="btn btn-danger btn-small" onclick="deleteUser('${user.id}')">
+                刪除
+              </button>
+            </td>
+          </tr>
+        `
+          )
+          .join('');
+      } catch (error) {
+        console.error('載入帳號失敗:', error);
+        document.getElementById('usersList').innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; color: #dc3545;">
+              載入失敗：${error.message}
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    // ============================================
+    // 刪除帳號
+    // ============================================
+    async function deleteUser(userId) {
+      if (!confirm('確定要刪除此帳號嗎？此操作無法復原。')) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/accounts/${userId}`, {
+          method: 'DELETE'
+        });
+
+        if (!response.ok) {
+          throw new Error('刪除失敗');
+        }
+
+        showToast('✓ 帳號已刪除', 'success');
+        await loadUsers();
+      } catch (error) {
+        showToast(`❌ 刪除失敗: ${error.message}`, 'error');
+      }
+    }
+
+    // ============================================
+    // 初始化
+    // ============================================
+    document.addEventListener('DOMContentLoaded', () => {
+      // 綁定表單事件
+      document.getElementById('accountForm').addEventListener('submit', handleCreateAccount);
+
+      // 附加實時驗證
+      AccountValidator.attachRealTimeValidation();
+
+      // 載入帳號清單
+      loadUsers();
+    });
+  </script>
+</body>
+</html>
