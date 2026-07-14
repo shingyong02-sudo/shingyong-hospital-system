@@ -14,5 +14,9 @@
   },
   "engines": {
     "node": ">=22.5.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.110.4",
+    "dotenv": "^17.4.2"
   }
 }
